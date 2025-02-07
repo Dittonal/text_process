@@ -28,10 +28,10 @@ en_stopwords = requests.get(en_stopwords_url).text.splitlines()
 # Function to clean text
 def clean_text(text, language):
     text = text.replace('\n', ' ').replace('\r', ' ').strip()
-    if language == "英文":
+    if language == "EN":
         text = re.sub(r'[^A-Za-z0-9\s]', '', text)
         text = text.lower()
-    elif language == "中文":
+    elif language == "ZH":
         text = re.sub(r"(回复)?(//)?\s*@\S*?\s*(:| |$)", " ", text)  # 去除正文中的@和回复/转发中的用户名
         text = re.sub(r"\[\S+\]", "", text)      # 去除表情符号
         # text = re.sub(r"#\S+#", "", text)      # 保留话题内容
@@ -49,10 +49,10 @@ def clean_text(text, language):
 
 # Function to perform word segmentation and POS tagging
 def segment_and_tag(text, language):
-    if language == "中文":
+    if language == "ZH":
         words = pseg.cut(text)
         result = [(word, flag) for word, flag in words if word not in cn_stopwords]
-    elif language == "英文":
+    elif language == "EN":
         words = word_tokenize(text)
         tagged_words = pos_tag(words)
         result = [(word, tag) for word, tag in tagged_words if word not in en_stopwords]
@@ -74,15 +74,15 @@ def calculate_frequency(tagged_words):
     return freq_dict
 # Function to calculate sentiment score
 def get_sentiment_score(text, language):
-    if language == "中文":
+    if language == "ZH":
         return SnowNLP(text).sentiments
-    elif language == "英文":
+    elif language == "EN":
         return TextBlob(text).sentiment.polarity
     else:
         return 0
 st.title("Text Processing App")
 
-language = st.sidebar.selectbox("Select Language", ["中文", "英文"])
+language = st.sidebar.selectbox("Select Language", ["ZH", "EN","KR"])
 
 calculate_sentiment = st.sidebar.checkbox("Calculate Sentiment Score")
 
