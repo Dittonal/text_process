@@ -5,3 +5,4 @@ openpyxl
 textblob
 snownlp
 kiwipiepy
+python-docx
