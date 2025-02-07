@@ -1,2 +1,4 @@
 jieba
 nltk
+xlsxwriter
+openpyxl
