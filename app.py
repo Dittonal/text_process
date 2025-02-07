@@ -92,7 +92,9 @@ if uploaded_file:
         df['posTag_content'] = df['cleaned_content'].apply(lambda x: " ".join([f"{word}/{tag}" for word, tag in segment_and_tag(x, language)]))
         if calculate_sentiment:
             df['sentiment_score'] = df['content'].apply(lambda x: get_sentiment_score(x, language))
-        freq_dict = calculate_frequency([tuple(item.split('/')) for sublist in df['posTag_content'].str.split(' ').tolist() for item in sublist])
+        tagged_words=[tuple(item.split('/')) for sublist in df['posTag_content'].str.split(' ').tolist() for item in sublist]
+        dd=list(filter(lambda x:len(x)>1,tagged_words))
+        freq_dict = calculate_frequency(dd)
         sheet2_data = pd.DataFrame([
             {"words": word, "word_tag": data["word_tag"], "frequency": data["frequency"]}
             for word, data in freq_dict.items()
