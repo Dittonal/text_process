@@ -91,6 +91,6 @@ if uploaded_file:
     st.download_button(
         label="Download Results",
         data=output,
-        file_name="text_processing_results.xlsx",
+        file_name=f"{language}text_processing_results.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
