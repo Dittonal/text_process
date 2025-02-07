@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import nltk
 import jieba
 import jieba.posseg as pseg
 from nltk.tokenize import word_tokenize
