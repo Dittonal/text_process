@@ -30,7 +30,7 @@ en_stopwords = requests.get(en_stopwords_url).text.splitlines()
 def clean_text(text, language):
     text = text.replace('\n', ' ').replace('\r', ' ').strip()
     if language == "EN":
-        text = re.sub(r'[^A-Za-z0-9\s]', '', text)
+        text = re.sub(r'[^A-Za-z0-9\s]', ' ', text)
         text = text.lower()
     elif language == "ZH":
         text = re.sub(r"(回复)?(//)?\s*@\S*?\s*(:| |$)", " ", text)  # 去除正文中的@和回复/转发中的用户名
