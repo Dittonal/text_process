@@ -54,8 +54,8 @@ def segment_and_tag(text, language):
 # Function to calculate word frequency
 def calculate_frequency(tagged_words):
     freq_dict = {}
+    print(tagged_words)
     for word, tag in tagged_words:
-        print(word,tag)
         if word in freq_dict:
             freq_dict[word]['frequency'] += 1
         else:
