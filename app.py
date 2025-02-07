@@ -89,7 +89,15 @@ language = st.sidebar.selectbox("Select Language", ["ZH", "EN","KR"])
 calculate_sentiment = st.sidebar.checkbox("Calculate Sentiment Score")
 
 uploaded_file = st.file_uploader("Upload a TXT file", type=["txt"])
-
+st.divider()
+with st.expander("A Powerful Text Process App !"):
+    st.markdown("""
+        ## Support Language : ZH(汉语)、 EN(英语)、 KR(韩语)
+        ### Word Frequency 
+        ### Text Segmentation
+        ### POS Tagging
+        """,    
+            unsafe_allow_html=True)
 if uploaded_file:
     try:
         text = uploaded_file.read().decode("utf-8")
