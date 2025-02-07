@@ -70,17 +70,15 @@ if uploaded_file:
     except UnicodeDecodeError:
         st.error("The uploaded file is not UTF-8 encoded. Please upload a UTF-8 encoded TXT file.")
     else:
-        cleaned_text = clean_text(text, language)
+        # Read the file line by line and create a DataFrame
+        lines = text.splitlines()
+        df = pd.DataFrame(lines, columns=["content"])
 
-        tagged_words = segment_and_tag(cleaned_text, language)
+        # Apply cleaning and segmentation to each line
+        df['cleaned_content'] = df['content'].apply(lambda x: clean_text(x, language))
+        df['posTag_content'] = df['cleaned_content'].apply(lambda x: " ".join([f"{word}/{tag}" for word, tag in segment_and_tag(x, language)]))
 
-        sheet1_data = pd.DataFrame({
-            "content": [text],
-            "cleaned_content": [cleaned_text],
-            "posTag_content": [" ".join(f"{word}/{tag}" for word, tag in tagged_words)]
-        })
-
-        freq_dict = calculate_frequency(tagged_words)
+        freq_dict = calculate_frequency([item for sublist in df['posTag_content'].apply(segment_and_tag, args=(language,)) for item in sublist])
         sheet2_data = pd.DataFrame([
             {"words": word, "word_tag": data["word_tag"], "frequency": data["frequency"]}
             for word, data in freq_dict.items()
@@ -88,9 +86,9 @@ if uploaded_file:
 
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            sheet1_data.to_excel(writer, sheet_name="content", index=False)
+            df.to_excel(writer, sheet_name="content", index=False)
             sheet2_data.to_excel(writer, sheet_name="frequency", index=False)
-        output.seek(0)
+        output.seek(0))
 
         st.download_button(
             label="Download Results",
