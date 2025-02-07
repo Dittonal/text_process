@@ -43,8 +43,10 @@ def clean_text(text, language):
         text = re.sub(r"\s+", " ", text) # 合并正文中过多的空格
         text = re.sub(r'[^\u4e00-\u9fff]+', ' ',text)
     else:
-        text = text
-
+        URL_REGEX = re.compile(
+            r'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?«»“”‘’]))',
+            re.IGNORECASE)
+        text = re.sub(URL_REGEX, "", text)
     return text.strip()
 
 # Function to perform word segmentation and POS tagging
