@@ -88,7 +88,7 @@ if uploaded_file:
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
             df.to_excel(writer, sheet_name="content", index=False)
             sheet2_data.to_excel(writer, sheet_name="frequency", index=False)
-        output.seek(0))
+        output.seek(0)
 
         st.download_button(
             label="Download Results",
