@@ -65,32 +65,36 @@ language = st.sidebar.selectbox("Select Language", ["中文", "英文"])
 uploaded_file = st.file_uploader("Upload a TXT file", type=["txt"])
 
 if uploaded_file:
-    text = uploaded_file.read().decode("utf-8", errors='ignore')
-    cleaned_text = clean_text(text, language)
+    try:
+        text = uploaded_file.read().decode("utf-8")
+    except UnicodeDecodeError:
+        st.error("The uploaded file is not UTF-8 encoded. Please upload a UTF-8 encoded TXT file.")
+    else:
+        cleaned_text = clean_text(text, language)
 
-    tagged_words = segment_and_tag(cleaned_text, language)
+        tagged_words = segment_and_tag(cleaned_text, language)
 
-    sheet1_data = pd.DataFrame({
-        "content": [text],
-        "cleaned_content": [cleaned_text],
-        "posTag_content": [" ".join(f"{word}/{tag}" for word, tag in tagged_words)]
-    })
+        sheet1_data = pd.DataFrame({
+            "content": [text],
+            "cleaned_content": [cleaned_text],
+            "posTag_content": [" ".join(f"{word}/{tag}" for word, tag in tagged_words)]
+        })
 
-    freq_dict = calculate_frequency(tagged_words)
-    sheet2_data = pd.DataFrame([
-        {"words": word, "word_tag": data["word_tag"], "frequency": data["frequency"]}
-        for word, data in freq_dict.items()
-    ])
+        freq_dict = calculate_frequency(tagged_words)
+        sheet2_data = pd.DataFrame([
+            {"words": word, "word_tag": data["word_tag"], "frequency": data["frequency"]}
+            for word, data in freq_dict.items()
+        ])
 
-    output = BytesIO()
-    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-        sheet1_data.to_excel(writer, sheet_name="content", index=False)
-        sheet2_data.to_excel(writer, sheet_name="frequency", index=False)
-    output.seek(0)
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            sheet1_data.to_excel(writer, sheet_name="content", index=False)
+            sheet2_data.to_excel(writer, sheet_name="frequency", index=False)
+        output.seek(0)
 
-    st.download_button(
-        label="Download Results",
-        data=output,
-        file_name=f"{language}text_processing_results.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
+        st.download_button(
+            label="Download Results",
+            data=output,
+            file_name=f"{language}text_processing_results.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
