@@ -23,6 +23,7 @@ en_stopwords = requests.get(en_stopwords_url).text.splitlines()
 def clean_text(text, language):
     text = text.replace('\n', ' ').replace('\r', ' ').strip()
     if language == "英文":
+        text = re.sub(r'[^A-Za-z0-9\s]', '', text)
         text = text.lower()
     else:
         text = re.sub(r"(回复)?(//)?\s*@\S*?\s*(:| |$)", " ", text)  # 去除正文中的@和回复/转发中的用户名
@@ -57,10 +58,18 @@ def calculate_frequency(tagged_words):
         else:
             freq_dict[word] = {'word_tag': tag, 'frequency': 1}
     return freq_dict
-
+# Function to calculate sentiment score
+def get_sentiment_score(text, language):
+    if language == "中文":
+        return SnowNLP(text).sentiments
+    else:
+        return TextBlob(text).sentiment.polarity
+    
 st.title("Text Processing App")
 
 language = st.sidebar.selectbox("Select Language", ["中文", "英文"])
+
+calculate_sentiment = st.sidebar.checkbox("Calculate Sentiment Score")
 
 uploaded_file = st.file_uploader("Upload a TXT file", type=["txt"])
 
@@ -74,10 +83,12 @@ if uploaded_file:
         lines = text.splitlines()
         df = pd.DataFrame(lines, columns=["content"])
 
+        df=df.drop_duplicates(subset=['content'])
         # Apply cleaning and segmentation to each line
         df['cleaned_content'] = df['content'].apply(lambda x: clean_text(x, language))
         df['posTag_content'] = df['cleaned_content'].apply(lambda x: " ".join([f"{word}/{tag}" for word, tag in segment_and_tag(x, language)]))
-
+        if calculate_sentiment:
+            df['sentiment_score'] = df['content'].apply(lambda x: get_sentiment_score(x, language))
         freq_dict = calculate_frequency([item for sublist in df['posTag_content'].apply(segment_and_tag, args=(language,)) for item in sublist])
         sheet2_data = pd.DataFrame([
             {"words": word, "word_tag": data["word_tag"], "frequency": data["frequency"]}
