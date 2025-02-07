@@ -8,6 +8,8 @@ from nltk import pos_tag
 import requests
 from io import BytesIO
 import re
+from snownlp import SnowNLP
+from textblob import TextBlob
 nltk.download('punkt')
 nltk.download('punkt_tab')
 nltk.download('averaged_perceptron_tagger')
