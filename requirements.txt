@@ -2,3 +2,5 @@ jieba
 nltk
 xlsxwriter
 openpyxl
+textblob
+snownlp
