@@ -6,7 +6,8 @@ from nltk.tokenize import word_tokenize
 from nltk import pos_tag
 import requests
 from io import BytesIO
-
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
 # Load stopwords
 cn_stopwords_url = "https://raw.githubusercontent.com/CharyHong/Stopwords/main/stopwords_cn.txt"
 en_stopwords_url = "https://raw.githubusercontent.com/stopwords-iso/stopwords-en/master/stopwords-en.txt"
