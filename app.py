@@ -124,7 +124,8 @@ if uploaded_file:
             {"words": word, "word_tag": data["word_tag"], "frequency": data["frequency"]}
             for word, data in freq_dict.items()
         ])
-
+        sheet2_data=sheet2_data.replace(r'^\s*$', np.nan, regex=True)
+        sheet2_data = sheet2_data.dropna(how='all')
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
             df.to_excel(writer, sheet_name="content", index=False)
