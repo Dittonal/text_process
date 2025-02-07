@@ -7,9 +7,13 @@ from nltk.tokenize import word_tokenize
 from nltk import pos_tag
 import requests
 from io import BytesIO
-import re
 from snownlp import SnowNLP
 from textblob import TextBlob
+import re
+import kiwipiepy
+from kiwipiepy import Kiwi
+from kiwipiepy.utils import Stopwords
+stopwords = Stopwords()
 nltk.download('punkt')
 nltk.download('punkt_tab')
 nltk.download('averaged_perceptron_tagger')
@@ -27,7 +31,7 @@ def clean_text(text, language):
     if language == "英文":
         text = re.sub(r'[^A-Za-z0-9\s]', '', text)
         text = text.lower()
-    else:
+    elif language == "中文":
         text = re.sub(r"(回复)?(//)?\s*@\S*?\s*(:| |$)", " ", text)  # 去除正文中的@和回复/转发中的用户名
         text = re.sub(r"\[\S+\]", "", text)      # 去除表情符号
         # text = re.sub(r"#\S+#", "", text)      # 保留话题内容
@@ -38,6 +42,9 @@ def clean_text(text, language):
         text = text.replace("转发微博", "")       # 去除无意义的词语
         text = re.sub(r"\s+", " ", text) # 合并正文中过多的空格
         text = re.sub(r'[^\u4e00-\u9fff]+', ' ',text)
+    else:
+        text = text
+
     return text.strip()
 
 # Function to perform word segmentation and POS tagging
@@ -45,16 +52,20 @@ def segment_and_tag(text, language):
     if language == "中文":
         words = pseg.cut(text)
         result = [(word, flag) for word, flag in words if word not in cn_stopwords]
-    else:
+    elif language == "英文":
         words = word_tokenize(text)
         tagged_words = pos_tag(words)
         result = [(word, tag) for word, tag in tagged_words if word not in en_stopwords]
+    else:
+        kiwi = Kiwi()
+        tokens = kiwi.tokenize(text, stopwords=stopwords)
+        # Construct the result in the desired format (Token and its attributes)
+        result = [(token.form, token.tag) for token in tokens]
     return result
 
 # Function to calculate word frequency
 def calculate_frequency(tagged_words):
     freq_dict = {}
-    print(tagged_words)
     for word, tag in tagged_words:
         if word in freq_dict:
             freq_dict[word]['frequency'] += 1
@@ -65,9 +76,10 @@ def calculate_frequency(tagged_words):
 def get_sentiment_score(text, language):
     if language == "中文":
         return SnowNLP(text).sentiments
-    else:
+    elif language == "英文":
         return TextBlob(text).sentiment.polarity
-    
+    else:
+        return 0
 st.title("Text Processing App")
 
 language = st.sidebar.selectbox("Select Language", ["中文", "英文"])
