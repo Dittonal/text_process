@@ -109,6 +109,8 @@ if uploaded_file:
         df = pd.DataFrame(lines, columns=["content"])
 
         df=df.drop_duplicates(subset=['content'])
+        df = df.replace(r'^\s*$', np.nan, regex=True)
+        df = df.dropna(how='all')
         # Apply cleaning and segmentation to each line
         df['cleaned_content'] = df['content'].apply(lambda x: clean_text(x, language))
         df['posTag_content'] = df['cleaned_content'].apply(lambda x: " ".join([f"{word}/{tag}" for word, tag in segment_and_tag(x, language)]))
