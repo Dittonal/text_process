@@ -2,16 +2,34 @@ import streamlit as st
 import pandas as pd
 import jieba
 import jieba.posseg as pseg
+from nltk.tokenize import word_tokenize
+from nltk import pos_tag
+import requests
 from io import BytesIO
 
+# Load stopwords
+cn_stopwords_url = "https://raw.githubusercontent.com/CharyHong/Stopwords/main/stopwords_cn.txt"
+en_stopwords_url = "https://raw.githubusercontent.com/stopwords-iso/stopwords-en/master/stopwords-en.txt"
+
+cn_stopwords = requests.get(cn_stopwords_url).text.splitlines()
+en_stopwords = requests.get(en_stopwords_url).text.splitlines()
+
 # Function to clean text
-def clean_text(text):
-    return text.replace('\n', ' ').replace('\r', ' ').strip()
+def clean_text(text, language):
+    text = text.replace('\n', ' ').replace('\r', ' ').strip()
+    if language == "英文":
+        text = text.lower()
+    return text
 
 # Function to perform word segmentation and POS tagging
-def segment_and_tag(text):
-    words = pseg.cut(text)
-    result = [(word, flag) for word, flag in words]
+def segment_and_tag(text, language):
+    if language == "中文":
+        words = pseg.cut(text)
+        result = [(word, flag) for word, flag in words if word not in cn_stopwords]
+    else:
+        words = word_tokenize(text)
+        tagged_words = pos_tag(words)
+        result = [(word, tag) for word, tag in tagged_words if word not in en_stopwords]
     return result
 
 # Function to calculate word frequency
@@ -24,37 +42,30 @@ def calculate_frequency(tagged_words):
             freq_dict[word] = {'word_tag': tag, 'frequency': 1}
     return freq_dict
 
-# Streamlit UI
 st.title("Text Processing App")
 
-# Sidebar language selection
 language = st.sidebar.selectbox("Select Language", ["中文", "英文"])
 
-# File uploader
 uploaded_file = st.file_uploader("Upload a TXT file", type=["txt"])
 
-if uploaded_file is not None:
+if uploaded_file:
     text = uploaded_file.read().decode("utf-8", errors='ignore')
-    cleaned_text = clean_text(text)
+    cleaned_text = clean_text(text, language)
 
-    # Perform segmentation and POS tagging
-    tagged_words = segment_and_tag(cleaned_text)
+    tagged_words = segment_and_tag(cleaned_text, language)
 
-    # Data for sheet1
     sheet1_data = pd.DataFrame({
         "content": [text],
         "cleaned_content": [cleaned_text],
-        "posTag_content": [" ".join([f"{word}/{tag}" for word, tag in tagged_words])]
+        "posTag_content": [" ".join(f"{word}/{tag}" for word, tag in tagged_words)]
     })
 
-    # Data for sheet2
     freq_dict = calculate_frequency(tagged_words)
     sheet2_data = pd.DataFrame([
         {"words": word, "word_tag": data["word_tag"], "frequency": data["frequency"]}
         for word, data in freq_dict.items()
     ])
 
-    # Button to download Excel file
     output = BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         sheet1_data.to_excel(writer, sheet_name="content", index=False)
