@@ -4,3 +4,4 @@ xlsxwriter
 openpyxl
 textblob
 snownlp
+kiwipiepy
