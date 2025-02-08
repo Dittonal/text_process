@@ -15,13 +15,10 @@ import kiwipiepy
 from kiwipiepy import Kiwi
 from kiwipiepy.utils import Stopwords
 from docx import Document  
-
 from wordcloud import WordCloud
-from mplfonts.bin.cli import init
-# init()
 from mplfonts import use_font
-use_font('Noto Serif CJK SC')
 import matplotlib.pyplot as plt
+
 stopwords = Stopwords()
 nltk.download('punkt')
 nltk.download('punkt_tab')
@@ -33,13 +30,17 @@ en_stopwords_url = "https://raw.githubusercontent.com/stopwords-iso/stopwords-en
 
 cn_stopwords = requests.get(cn_stopwords_url).text.splitlines()
 en_stopwords = requests.get(en_stopwords_url).text.splitlines()
+FONT_PATH="/home/adminuser/venv/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/SourceHanSerifSC-Regular.otf"
 # Function to generate and display the word cloud
 def generate_wordcloud(frequency_data):
     # Join the words and frequencies to form the text for the word cloud
     word_freq = {row['words']: row['frequency'] for index, row in frequency_data.iterrows()}
 
     # Generate the word cloud using the word frequency data
-    wordcloud = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(word_freq)
+    wordcloud = WordCloud(width=800,
+                          height=400,
+                          font_path=FONT_PATH,
+                          background_color='white').generate_from_frequencies(word_freq)
 
     # Create a figure and axis for the plot
     fig, ax = plt.subplots(figsize=(10, 5))
