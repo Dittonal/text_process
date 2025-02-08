@@ -51,6 +51,13 @@ def generate_wordcloud(frequency_data):
     ax.axis("off")  # Turn off axis
     st.pyplot(fig)  # Display the word cloud in Streamlit
 @st.cache
+def generate_excel(df, sheet2_data):
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, sheet_name="content", index=False)
+        sheet2_data.to_excel(writer, sheet_name="frequency", index=False)
+    output.seek(0)
+    return output
 def generate_png(frequency_data):
     # Save the word cloud as a PNG file with transparent background
     word_freq = {row['words']: row['frequency'] for index, row in frequency_data.iterrows()}
@@ -189,14 +196,10 @@ if uploaded_file:
             mime="image/png"
         )
         output = BytesIO()
-        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            df.to_excel(writer, sheet_name="content", index=False)
-            sheet2_data.to_excel(writer, sheet_name="frequency", index=False)
-        output.seek(0)
-
+        excel_data = generate_excel(df, sheet2_data)
         st.download_button(
             label="Download Excel",
-            data=output,
+            data=excel_data,
             file_name=f"{language}text_processing_results.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
