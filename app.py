@@ -15,11 +15,11 @@ import kiwipiepy
 from kiwipiepy import Kiwi
 from kiwipiepy.utils import Stopwords
 from docx import Document  
-import matplotlib.pyplot as plt
+
 from wordcloud import WordCloud
 from mplfonts import use_font
 use_font('Noto Serif CJK SC')
-
+import matplotlib.pyplot as plt
 stopwords = Stopwords()
 nltk.download('punkt')
 nltk.download('punkt_tab')
