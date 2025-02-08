@@ -32,7 +32,7 @@ cn_stopwords = requests.get(cn_stopwords_url).text.splitlines()
 en_stopwords = requests.get(en_stopwords_url).text.splitlines()
 FONT_PATH="/home/adminuser/venv/lib/python3.12/site-packages/mplfonts/fonts/SourceHanMonoSC-Regular.otf"
 # Function to generate and display the word cloud
-@st.cache
+@st.cache_data
 def generate_wordcloud(frequency_data):
     # Join the words and frequencies to form the text for the word cloud
     word_freq = {row['words']: row['frequency'] for index, row in frequency_data.iterrows()}
@@ -50,7 +50,7 @@ def generate_wordcloud(frequency_data):
     ax.imshow(wordcloud, interpolation='bilinear')
     ax.axis("off")  # Turn off axis
     st.pyplot(fig)  # Display the word cloud in Streamlit
-@st.cache
+@st.cache_data 
 def generate_excel(df, sheet2_data):
     output = BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
