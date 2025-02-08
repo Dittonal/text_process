@@ -14,6 +14,7 @@ import re
 import kiwipiepy
 from kiwipiepy import Kiwi
 from kiwipiepy.utils import Stopwords
+from docx import Document  
 stopwords = Stopwords()
 nltk.download('punkt')
 nltk.download('punkt_tab')
