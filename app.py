@@ -15,6 +15,11 @@ import kiwipiepy
 from kiwipiepy import Kiwi
 from kiwipiepy.utils import Stopwords
 from docx import Document  
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud
+from mplfonts import use_font
+use_font('Noto Serif CJK SC')
+
 stopwords = Stopwords()
 nltk.download('punkt')
 nltk.download('punkt_tab')
@@ -26,6 +31,19 @@ en_stopwords_url = "https://raw.githubusercontent.com/stopwords-iso/stopwords-en
 
 cn_stopwords = requests.get(cn_stopwords_url).text.splitlines()
 en_stopwords = requests.get(en_stopwords_url).text.splitlines()
+# Function to generate and display the word cloud
+def generate_wordcloud(frequency_data):
+    # Join the words and frequencies to form the text for the word cloud
+    word_freq = {row['words']: row['frequency'] for index, row in frequency_data.iterrows()}
+
+    # Generate the word cloud using the word frequency data
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(word_freq)
+
+    # Display the word cloud using matplotlib
+    plt.figure(figsize=(10, 5))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis("off")
+    st.pyplot()  # Display the word cloud in Streamlit
 
 # Function to read content from .docx file
 def read_docx(file):
@@ -139,6 +157,9 @@ if uploaded_file:
 
         st.subheader("Word Frequency Data (Top 10 rows)")
         st.dataframe(sheet2_data.head(10))
+        # Generate and display the word cloud
+        st.subheader("Word Cloud")
+        generate_wordcloud(sheet2_data)
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
             df.to_excel(writer, sheet_name="content", index=False)
