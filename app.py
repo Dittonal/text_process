@@ -26,6 +26,14 @@ en_stopwords_url = "https://raw.githubusercontent.com/stopwords-iso/stopwords-en
 cn_stopwords = requests.get(cn_stopwords_url).text.splitlines()
 en_stopwords = requests.get(en_stopwords_url).text.splitlines()
 
+# Function to read content from .docx file
+def read_docx(file):
+    doc = Document(file)
+    content = []
+    for para in doc.paragraphs:
+        content.append(para.text)
+    return '\n'.join(content)
+
 # Function to clean text
 def clean_text(text, language):
     text = text.replace('\n', ' ').replace('\r', ' ').strip()
@@ -86,7 +94,7 @@ language = st.sidebar.selectbox("Select Language", ["ZH", "EN","KR"])
 
 calculate_sentiment = st.sidebar.checkbox("Calculate Sentiment Score")
 
-uploaded_file = st.file_uploader("Upload a TXT file", type=["txt"])
+uploaded_file = st.file_uploader("Upload a TXT or DOCX file", type=["txt", "docx"])
 st.divider()
 with st.expander("A Powerful Text Process App !"):
     st.markdown("""
@@ -98,9 +106,12 @@ with st.expander("A Powerful Text Process App !"):
             unsafe_allow_html=True)
 if uploaded_file:
     try:
-        text = uploaded_file.read().decode("utf-8")
-    except UnicodeDecodeError:
-        st.error("The uploaded file is not UTF-8 encoded. Please upload a UTF-8 encoded TXT file.")
+        if uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":  # Check for DOCX file
+            text = read_docx(uploaded_file)
+        else:
+            text = uploaded_file.read().decode("utf-8")
+    except Exception as e:
+        st.error(f"Error reading the file: {str(e)}")
     else:
         # Read the file line by line and create a DataFrame
         lines = text.splitlines()
@@ -121,6 +132,12 @@ if uploaded_file:
             {"words": word, "word_tag": data["word_tag"], "frequency": data["frequency"]}
             for word, data in freq_dict.items()
         ])
+        # Displaying the top 10 rows of df and sheet2_data
+        st.subheader("Processed Content Data (Top 10 rows)")
+        st.dataframe(df.head(10))
+
+        st.subheader("Word Frequency Data (Top 10 rows)")
+        st.dataframe(sheet2_data.head(10))
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
             df.to_excel(writer, sheet_name="content", index=False)
