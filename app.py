@@ -49,6 +49,18 @@ def generate_wordcloud(frequency_data):
     ax.imshow(wordcloud, interpolation='bilinear')
     ax.axis("off")  # Turn off axis
     st.pyplot(fig)  # Display the word cloud in Streamlit
+def generate_png(frequency_data):
+    # Save the word cloud as a PNG file with transparent background
+    img_buffer = BytesIO()
+    wordcloud = WordCloud(background_color = None,
+                          mode='RGBA',
+                          width = 1000, 
+                          height = 800,
+                          margin = 3,
+                          max_font_size=100,scale=15).generate_from_frequencies(word_freq)
+    wordcloud.to_image().save(img_buffer, format='PNG')
+    img_buffer.seek(0)
+    return img_buffer
 def read_docx(file):
     doc = Document(file)
     content = []
@@ -163,6 +175,15 @@ if uploaded_file:
         # Generate and display the word cloud
         st.subheader("Word Cloud")
         generate_wordcloud(sheet2_data)
+        # Add a download button to allow users to download the PNG image
+        st.subheader("Download Word Cloud as PNG")
+        img_buffer = generate_png(sheet2_data)  # Generate PNG only when the user clicks the button
+        st.download_button(
+            label="Download Word Cloud as PNG",
+            data=img_buffer,
+            file_name=f"{language}wordcloud.png",
+            mime="image/png"
+        )
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
             df.to_excel(writer, sheet_name="content", index=False)
@@ -170,7 +191,7 @@ if uploaded_file:
         output.seek(0)
 
         st.download_button(
-            label="Download Results",
+            label="Download Excel",
             data=output,
             file_name=f"{language}text_processing_results.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
