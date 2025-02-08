@@ -39,13 +39,13 @@ def generate_wordcloud(frequency_data):
     # Generate the word cloud using the word frequency data
     wordcloud = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(word_freq)
 
+    # Create a figure and axis for the plot
+    fig, ax = plt.subplots(figsize=(10, 5))
+    
     # Display the word cloud using matplotlib
-    plt.figure(figsize=(10, 5))
-    plt.imshow(wordcloud, interpolation='bilinear')
-    plt.axis("off")
-    st.pyplot()  # Display the word cloud in Streamlit
-
-# Function to read content from .docx file
+    ax.imshow(wordcloud, interpolation='bilinear')
+    ax.axis("off")  # Turn off axis
+    st.pyplot(fig)  # Display the word cloud in Streamlit
 def read_docx(file):
     doc = Document(file)
     content = []
