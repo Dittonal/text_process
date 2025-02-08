@@ -6,3 +6,6 @@ textblob
 snownlp
 kiwipiepy
 python-docx
+wordcloud 
+matplotlib
+mplfonts
