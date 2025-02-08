@@ -18,7 +18,7 @@ from docx import Document
 
 from wordcloud import WordCloud
 from mplfonts.bin.cli import init
-init()
+# init()
 from mplfonts import use_font
 use_font('Noto Serif CJK SC')
 import matplotlib.pyplot as plt
