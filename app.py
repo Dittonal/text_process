@@ -179,10 +179,10 @@ if uploaded_file:
         ])
         # Displaying the top 10 rows of df and sheet2_data
         st.subheader("Processed Content Data (Top 10 rows)")
-        st.dataframe(df.head(10))
+        st.dataframe(df.head(10),use_container_width=True)
 
         st.subheader("Word Frequency Data (Top 10 rows)")
-        st.dataframe(sheet2_data.head(10))
+        st.dataframe(sheet2_data.head(10),use_container_width=True)
         # Generate and display the word cloud
         st.subheader("Word Cloud")
         generate_wordcloud(sheet2_data)
