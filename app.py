@@ -30,7 +30,7 @@ en_stopwords_url = "https://raw.githubusercontent.com/stopwords-iso/stopwords-en
 
 cn_stopwords = requests.get(cn_stopwords_url).text.splitlines()
 en_stopwords = requests.get(en_stopwords_url).text.splitlines()
-FONT_PATH="/home/adminuser/venv/lib/python3.12/site-packages/matplotlib/mpl-data/fonts/ttf/SourceHanSerifSC-Regular.otf"
+FONT_PATH="/home/adminuser/venv/lib/python3.12/site-packages/mplfonts/fonts/SourceHanMonoSC-Regular.otf"
 # Function to generate and display the word cloud
 def generate_wordcloud(frequency_data):
     # Join the words and frequencies to form the text for the word cloud
