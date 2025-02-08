@@ -140,6 +140,10 @@ language = st.sidebar.selectbox("Select Language", ["ZH", "EN","KR"])
 calculate_sentiment = st.sidebar.checkbox("Calculate Sentiment Score")
 
 uploaded_file = st.file_uploader("Upload a TXT or DOCX file", type=["txt", "docx"])
+# Display the selected language as a message
+# Show the selected language in red
+st.markdown(f"<h3 style='color:red;'>Current Selected Language: {language}</h3>", unsafe_allow_html=True)
+
 st.divider()
 with st.expander("A Powerful Text Process App !"):
     st.markdown("""
