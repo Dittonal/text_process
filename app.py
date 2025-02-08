@@ -107,7 +107,7 @@ with st.expander("A Powerful Text Process App !"):
             unsafe_allow_html=True)
 if uploaded_file:
     try:
-        if uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":  # Check for DOCX file
+        if ".docx" in uploaded_file.name[-5:]  :  # Check for DOCX file
             text = read_docx(uploaded_file)
         else:
             text = uploaded_file.read().decode("utf-8")
