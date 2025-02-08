@@ -32,6 +32,7 @@ cn_stopwords = requests.get(cn_stopwords_url).text.splitlines()
 en_stopwords = requests.get(en_stopwords_url).text.splitlines()
 FONT_PATH="/home/adminuser/venv/lib/python3.12/site-packages/mplfonts/fonts/SourceHanMonoSC-Regular.otf"
 # Function to generate and display the word cloud
+@st.cache
 def generate_wordcloud(frequency_data):
     # Join the words and frequencies to form the text for the word cloud
     word_freq = {row['words']: row['frequency'] for index, row in frequency_data.iterrows()}
@@ -49,6 +50,7 @@ def generate_wordcloud(frequency_data):
     ax.imshow(wordcloud, interpolation='bilinear')
     ax.axis("off")  # Turn off axis
     st.pyplot(fig)  # Display the word cloud in Streamlit
+@st.cache
 def generate_png(frequency_data):
     # Save the word cloud as a PNG file with transparent background
     word_freq = {row['words']: row['frequency'] for index, row in frequency_data.iterrows()}
@@ -58,6 +60,7 @@ def generate_png(frequency_data):
                           width = 1000, 
                           height = 800,
                           margin = 3,
+                          font_path=FONT_PATH,
                           max_font_size=100,scale=15).generate_from_frequencies(word_freq)
     wordcloud.to_image().save(img_buffer, format='PNG')
     img_buffer.seek(0)
