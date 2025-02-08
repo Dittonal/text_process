@@ -51,6 +51,7 @@ def generate_wordcloud(frequency_data):
     st.pyplot(fig)  # Display the word cloud in Streamlit
 def generate_png(frequency_data):
     # Save the word cloud as a PNG file with transparent background
+    word_freq = {row['words']: row['frequency'] for index, row in frequency_data.iterrows()}
     img_buffer = BytesIO()
     wordcloud = WordCloud(background_color = None,
                           mode='RGBA',
