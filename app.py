@@ -144,7 +144,7 @@ language = st.sidebar.selectbox("Select Language", ["ZH", "EN","KR"])
 
 calculate_sentiment = st.sidebar.checkbox("Calculate Sentiment Score")
 number_control = st.sidebar.checkbox("Filter Number Keyword",value=True)
-lenth_control = st.sidebar.checkbox("Filter Number Keyword",value=True)
+lenth_control = st.sidebar.checkbox("Filter Lenth lt 2",value=True)
 
 uploaded_file = st.file_uploader("Upload a TXT or DOCX file", type=["txt", "docx"])
 # Display the selected language as a message
