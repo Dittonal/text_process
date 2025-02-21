@@ -51,10 +51,15 @@ def generate_wordcloud(frequency_data):
     ax.axis("off")  # Turn off axis
     st.pyplot(fig)  # Display the word cloud in Streamlit
 @st.cache_data 
-def generate_excel(df, sheet2_data):
+def generate_excel(df, sheet2_data,number_control,lenth_control):
+    sheet2_data['words'] = sheet2_data['words'].str.strip()
+    sheet2_data['words']=sheet2_data['words'].astype(str)
+    if number_control: sheet2_data = sheet2_data[~sheet2_data['words'].str.match(r'^[\d.]+$')]  # 匹配数字和小数
+    if lenth_control: sheet2_data = sheet2_data[sheet2_data['words'].str.len() >= 2]
     output = BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         df.to_excel(writer, sheet_name="content", index=False)
+        
         sheet2_data.to_excel(writer, sheet_name="frequency", index=False)
     output.seek(0)
     return output
@@ -64,11 +69,11 @@ def generate_png(frequency_data):
     img_buffer = BytesIO()
     wordcloud = WordCloud(background_color = None,
                           mode='RGBA',
-                          width = 1000, 
-                          height = 800,
+                          width = 800, 
+                          height = 600,
                           margin = 3,
                           font_path=FONT_PATH,
-                          max_font_size=100,scale=15).generate_from_frequencies(word_freq)
+                          max_font_size=100,scale=10).generate_from_frequencies(word_freq)
     wordcloud.to_image().save(img_buffer, format='PNG')
     img_buffer.seek(0)
     return img_buffer
@@ -138,6 +143,8 @@ st.title("Text Processing App")
 language = st.sidebar.selectbox("Select Language", ["ZH", "EN","KR"])
 
 calculate_sentiment = st.sidebar.checkbox("Calculate Sentiment Score")
+number_control = st.sidebar.checkbox("Filter Number Keyword",value=True)
+lenth_control = st.sidebar.checkbox("Filter Number Keyword",value=True)
 
 uploaded_file = st.file_uploader("Upload a TXT or DOCX file", type=["txt", "docx"])
 # Display the selected language as a message
@@ -192,7 +199,9 @@ if uploaded_file:
         generate_wordcloud(sheet2_data)
         # Add a download button to allow users to download the PNG image
         st.subheader("Download Word Cloud as PNG")
-        img_buffer = generate_png(sheet2_data)  # Generate PNG only when the user clicks the button
+        png_data=sheet2_data.sort_values(by='col1',ascending=False).iloc[:40,:]
+        
+        img_buffer = generate_png(png_data)  # Generate PNG only when the user clicks the button
         st.download_button(
             label="Download Word Cloud as PNG",
             data=img_buffer,
