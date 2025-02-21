@@ -199,7 +199,7 @@ if uploaded_file:
         generate_wordcloud(sheet2_data)
         # Add a download button to allow users to download the PNG image
         st.subheader("Download Word Cloud as PNG")
-        png_data=sheet2_data.sort_values(by='col1',ascending=False).iloc[:40,:]
+        png_data=sheet2_data.sort_values(by='words',ascending=False).iloc[:40,:]
         
         img_buffer = generate_png(png_data)  # Generate PNG only when the user clicks the button
         st.download_button(
