@@ -209,7 +209,7 @@ if uploaded_file:
             mime="image/png"
         )
         output = BytesIO()
-        excel_data = generate_excel(df, sheet2_data)
+        excel_data = generate_excel(df, sheet2_data,number_control,lenth_control)
         st.download_button(
             label="Download Excel",
             data=excel_data,
