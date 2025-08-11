@@ -92,7 +92,7 @@ def clean_text(text, language):
             re.IGNORECASE)
     text = re.sub(URL_REGEX, "", text)
     if language == "EN":
-         text = re.sub(r"\s+", " ", text).strip()
+        text = re.sub(r"\s+", " ", text).strip()
         # text = re.sub(r'[^A-Za-z0-9\s]', ' ', text)
         text = text.lower()
     elif language == "ZH":
