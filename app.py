@@ -92,7 +92,8 @@ def clean_text(text, language):
             re.IGNORECASE)
     text = re.sub(URL_REGEX, "", text)
     if language == "EN":
-        text = re.sub(r'[^A-Za-z0-9\s]', ' ', text)
+         text = re.sub(r"\s+", " ", text).strip()
+        # text = re.sub(r'[^A-Za-z0-9\s]', ' ', text)
         text = text.lower()
     elif language == "ZH":
         text = re.sub(r"(回复)?(//)?\s*@\S*?\s*(:| |$)", " ", text)  # 去除正文中的@和回复/转发中的用户名
@@ -158,6 +159,7 @@ with st.expander("A Powerful Text Process App !"):
         ### Word Frequency 
         ### Text Segmentation
         ### POS Tagging
+        ### Make sure that each row has fewer words than 5000, due to excel file cells 
         """,    
             unsafe_allow_html=True)
 if uploaded_file:
@@ -179,6 +181,8 @@ if uploaded_file:
         # Apply cleaning and segmentation to each line
         df['cleaned_content'] = df['content'].apply(lambda x: clean_text(x, language))
         df['posTag_content'] = df['cleaned_content'].apply(lambda x: " ".join([f"{word}/{tag}" for word, tag in segment_and_tag(x, language)]))
+        df['onlyCut_content'] = df['cleaned_content'].apply(lambda x: " ".join([f"{word}" for word, tag in segment_and_tag(x, language)]))
+
         if calculate_sentiment:
             df['sentiment_score'] = df['content'].apply(lambda x: get_sentiment_score(x, language))
         tagged_words=[tuple(item.split('/')) for sublist in df['posTag_content'].str.split(' ').tolist() for item in sublist]
