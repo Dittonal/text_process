@@ -83,16 +83,6 @@ def read_docx(file):
     for para in doc.paragraphs:
         content.append(para.text)
     return '\n'.join(content)
-@st.cache_data
-def generate_segmented_txt(df):
-    """
-    将 onlyCut_content 按行合并为 txt，并返回 BytesIO
-    """
-    txt_content = "\n".join(df['onlyCut_content'].astype(str).tolist())
-    buffer = BytesIO()
-    buffer.write(txt_content.encode("utf-8"))
-    buffer.seek(0)
-    return buffer
 
 # Function to clean text
 def clean_text(text, language):
