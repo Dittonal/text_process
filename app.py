@@ -83,6 +83,16 @@ def read_docx(file):
     for para in doc.paragraphs:
         content.append(para.text)
     return '\n'.join(content)
+@st.cache_data
+def generate_segmented_txt(df):
+    """
+    将 onlyCut_content 按行合并为 txt，并返回 BytesIO
+    """
+    txt_content = "\n".join(df['onlyCut_content'].astype(str).tolist())
+    buffer = BytesIO()
+    buffer.write(txt_content.encode("utf-8"))
+    buffer.seek(0)
+    return buffer
 
 # Function to clean text
 def clean_text(text, language):
@@ -219,4 +229,14 @@ if uploaded_file:
             data=excel_data,
             file_name=f"{language}text_processing_results.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        st.subheader("Download Segmented TXT (Space-separated)")
+
+        txt_buffer = generate_segmented_txt(df)
+        
+        st.download_button(
+            label="Download Segmented TXT",
+            data=txt_buffer,
+            file_name=f"{language}_segmented.txt",
+            mime="text/plain"
         )
