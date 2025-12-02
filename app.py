@@ -230,13 +230,3 @@ if uploaded_file:
             file_name=f"{language}text_processing_results.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
-        st.subheader("Download Segmented TXT (Space-separated)")
-
-        txt_buffer = generate_segmented_txt(df)
-        
-        st.download_button(
-            label="Download Segmented TXT",
-            data=txt_buffer,
-            file_name=f"{language}_segmented.txt",
-            mime="text/plain"
-        )
